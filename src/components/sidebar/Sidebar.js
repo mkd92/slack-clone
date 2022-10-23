@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import SidebarOption from "./sidebarOption/SidebarOption";
 import InsertCommentIcon from "@mui/icons-material/InsertComment";
-import { getRooms } from "../../firebase";
-
+import db from "../../firebase";
 import "./Sidebar.css";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import CreateIcon from "@mui/icons-material/Create";
@@ -19,8 +18,13 @@ import AddIcon from "@mui/icons-material/Add";
 function Sidebar() {
   const [channels, setChannels] = useState([]);
   useEffect(() => {
-    getRooms().then((channel) => {
-      setChannels(channel);
+    db.collection("rooms").onSnapshot((snapshot) => {
+      setChannels(
+        snapshot.docs.map((doc) => ({
+          id: doc.id,
+          name: doc.data().name,
+        }))
+      );
     });
   }, []);
   return (
@@ -46,9 +50,9 @@ function Sidebar() {
       <hr />
       <SidebarOption Icon={ExpandMoreIcon} title="Channels" />
       <hr />
-      <SidebarOption Icon={AddIcon} title="Add Channel" />
+      <SidebarOption Icon={AddIcon} addChannelOption title="Add Channel" />
       {channels.map((channel) => (
-        <SidebarOption title={channel.name} key={channel.id} />
+        <SidebarOption title={channel.name} key={channel.id} id={channel.id} />
       ))}
     </div>
   );
