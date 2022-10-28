@@ -14,11 +14,11 @@ import FileCopyIcon from "@mui/icons-material/FileCopy";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AddIcon from "@mui/icons-material/Add";
-
+import { collection, onSnapshot } from "firebase/firestore";
 function Sidebar() {
   const [channels, setChannels] = useState([]);
   useEffect(() => {
-    db.collection("rooms").onSnapshot((snapshot) => {
+    onSnapshot(collection(db, "rooms"), (snapshot) => {
       setChannels(
         snapshot.docs.map((doc) => ({
           id: doc.id,

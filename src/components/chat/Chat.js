@@ -6,24 +6,35 @@ import "./Chat.css";
 import StarBorderOutlinedIcon from "@mui/icons-material/StarBorderOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import db from "../../firebase.js";
+import {
+  doc,
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  getDocs,
+} from "firebase/firestore";
 
 function Chat() {
   const { roomId } = useParams();
   const [roomDetails, setRoomDetails] = useState(null);
-  const [roomMessages, setRoomMessages] = useState(null);
+  const [roomMessages, setRoomMessages] = useState([]);
   useEffect(() => {
     if (roomId) {
-      db.collection("rooms")
-        .doc(roomId)
-        .onSnapshot((snapshot) => setRoomDetails(snapshot.data()));
-    }
-    db.collection("rooms")
-      .doc(roomId)
-      .collection("messages")
-      .orderBy("timeStamp", "asc")
-      .onSnapshot((ss) => {
-        setRoomMessages(ss.docs.map((doc) => doc.data()));
+      onSnapshot(doc(collection(db, "rooms"), roomId), (snapshot) => {
+        setRoomDetails(snapshot.data());
       });
+      //   // db.collection("rooms")
+      //   //   .doc(roomId)
+      //   //   .onSnapshot((snapshot) => setRoomDetails(snapshot.data()));
+    }
+    let q = query(
+      collection(doc(collection(db, "rooms"), roomId), "messages"),
+      orderBy("timeStamp", "asc")
+    );
+    getDocs(q).then((docs) => {
+      setRoomMessages(docs.docs.map((doc) => doc.data()));
+    });
   }, [roomId]);
   return (
     <div className="chat">
