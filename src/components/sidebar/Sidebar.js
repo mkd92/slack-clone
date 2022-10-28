@@ -15,7 +15,10 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AddIcon from "@mui/icons-material/Add";
 import { collection, onSnapshot } from "firebase/firestore";
+import { useStateValue } from "./../../state/StateProvider";
 function Sidebar() {
+  const [{ user }] = useStateValue();
+
   const [channels, setChannels] = useState([]);
   useEffect(() => {
     onSnapshot(collection(db, "rooms"), (snapshot) => {
@@ -34,7 +37,7 @@ function Sidebar() {
           <h2>Clever Programmer</h2>
           <h3>
             <FiberManualRecordIcon />
-            Mkd92
+            {user?.displayName}
           </h3>
         </div>
         <CreateIcon />

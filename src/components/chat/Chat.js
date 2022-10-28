@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import ChatMessage from "./chatMessage/ChatMessage";
+import ChatInput from "./chatInput/ChatInput";
 
 import "./Chat.css";
 import StarBorderOutlinedIcon from "@mui/icons-material/StarBorderOutlined";
@@ -13,6 +14,7 @@ import {
   orderBy,
   query,
   getDocs,
+  QuerySnapshot,
 } from "firebase/firestore";
 
 function Chat() {
@@ -32,7 +34,7 @@ function Chat() {
       collection(doc(collection(db, "rooms"), roomId), "messages"),
       orderBy("timeStamp", "asc")
     );
-    getDocs(q).then((docs) => {
+    onSnapshot(q, (docs) => {
       setRoomMessages(docs.docs.map((doc) => doc.data()));
     });
   }, [roomId]);
@@ -61,6 +63,7 @@ function Chat() {
           />
         ))}
       </div>
+      <ChatInput channelName={roomDetails?.name} channelId={roomId} />
     </div>
   );
 }
